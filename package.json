@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "tsx watch src/http/server.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "generate": "drizzle-kit generate",
+    "studio": "drizzle-kit studio",
+    "migrate": "tsx ./src/db/migrate.ts"
   },
   "keywords": [],
   "author": "",
