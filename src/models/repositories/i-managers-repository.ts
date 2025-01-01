@@ -1,5 +1,5 @@
-import type { users } from "../../db/schemas";
 import type { IBase } from "./i-base";
+import type { IUserRepository } from "./i-users-repository";
 
 export type ManagerType = {
   id: string;
@@ -14,11 +14,10 @@ export type ManagerType = {
 export type RegisterManager = {
   managerName: string;
   email: string;
-  phone: string;
+  phone?: string;
 };
 
-export interface IManagerRepository extends IBase {
+export interface IManagerRepository extends IBase, IUserRepository {
   insert(data: RegisterManager): Promise<{ id: string }>;
   findById(id: string): Promise<ManagerType | null>;
-  findByEmail(email: string): Promise<ManagerType | null>;
 }

@@ -8,6 +8,12 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["dev", "test", "production"]).default("dev"),
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
+  AUTH_REDIRECT_URL: z.string(),
+  API_BASE_URL: z.string(),
+  EMAIL_ADDRESS: z.string(),
+  EMAIL_PASSWORD: z.string(),
+  EMAIL_SERVICE: z.string(),
+  EMAIL_HOST: z.string(),
 });
 
 const _env = envSchema.safeParse(process.env);

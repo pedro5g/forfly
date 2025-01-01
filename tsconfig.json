@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
+    "esModuleInterop": true,
     "jsx": "react-jsx",
     "allowJs": true,
 

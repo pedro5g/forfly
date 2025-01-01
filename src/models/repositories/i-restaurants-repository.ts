@@ -17,4 +17,5 @@ export type RegisterRestaurantParams = {
 export interface IRestaurantsRepository extends IBase {
   insert(data: RegisterRestaurantParams): Promise<{ id: string }>;
   getRestaurantById(restaurantId: string): Promise<RestaurantType | null>;
+  getRestaurantByManagerId(managerId: string): Promise<RestaurantType | null>;
 }

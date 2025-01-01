@@ -1,4 +1,3 @@
-import type { PgTableWithColumns, PgColumn } from "drizzle-orm/pg-core";
 import { restaurants } from "../db/schemas";
 import { Base } from "./base";
 import type {
@@ -26,6 +25,18 @@ export class Restaurant extends Base implements IRestaurantsRepository {
     const restaurant = await this.db.query.restaurants.findFirst({
       where(fields, { eq }) {
         return eq(fields.id, restaurantId);
+      },
+    });
+
+    return restaurant ?? null;
+  }
+
+  async getRestaurantByManagerId(
+    managerId: string
+  ): Promise<RestaurantType | null> {
+    const restaurant = await this.db.query.restaurants.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.managerId, managerId);
       },
     });
 

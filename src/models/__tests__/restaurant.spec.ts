@@ -96,4 +96,34 @@ describe("Restaurant unit test", async () => {
       })
     );
   });
+  test("find restaurant by manager id", async () => {
+    const data = {
+      managerName: "Jon doe",
+      email: "test2@gmail.com",
+      phone: "+55 15 00000 0000",
+    };
+
+    const ctx = new Context();
+    const restaurant = new Restaurant(ctx);
+
+    const res = await ctx.manager.insert(data);
+    userIds.push(res.id);
+    const restaurantRes = await restaurant.insert({
+      restaurantName: "pepito pizzaria",
+      managerId: res.id,
+    });
+    restaurantIds.push(restaurantRes.id);
+    expect(restaurantRes.id).toBeTruthy();
+
+    const restaurantFound = await restaurant.getRestaurantByManagerId(res.id);
+
+    expect(restaurantFound).toBeTruthy();
+    expect(restaurantFound).toEqual(
+      expect.objectContaining({
+        id: restaurantRes.id,
+        name: "pepito pizzaria",
+        managerId: res.id,
+      })
+    );
+  });
 });
