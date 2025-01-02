@@ -22,7 +22,14 @@ export async function orderRoutes(app: FastifyTypeInstance) {
           customerName: z.string().optional(),
           orderId: z.string().optional(),
           status: $Status.optional(),
-          pageIndex: z.coerce.number().optional().default(1),
+          pageIndex: z.coerce
+            .number()
+            .refine((page) => {
+              if (page <= 0) return 1;
+              return page;
+            })
+            .optional()
+            .default(1),
         }),
         response: {
           200: z.object({

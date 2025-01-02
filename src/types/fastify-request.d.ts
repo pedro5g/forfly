@@ -9,7 +9,7 @@ export type PayloadType = {
 
 declare module "fastify" {
   export interface FastifyRequest {
-    signUser: (payload: PayloadType) => Promise<void>;
+    signUser: (payload: PayloadType, redirectURL: string) => Promise<void>;
     signOut: () => void;
     getCurrentUser: () => Promise<{
       userId: PayloadType["sub"];

@@ -10,7 +10,7 @@ import {
 import { fastifySwagger } from "@fastify/swagger";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
 import { fastifyJwt } from "@fastify/jwt";
-import { fastifyCookie } from "@fastify/cookie";
+import fastifyCookie from "@fastify/cookie";
 import { requestLogger } from "../core/hooks/request-logger";
 import { applyRequest } from "../core/hooks/apply-request";
 import { restaurantRoutes } from "./routes/restaurant-routes";
@@ -21,10 +21,16 @@ import { productRoutes } from "./routes/product-routes";
 
 const app = fastify();
 
+app.register(fastifyCors, {
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  maxAge: 86400,
+  credentials: true,
+});
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
-app.register(fastifyCors, { origin: "*" });
 app.register(fastifyCookie);
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
@@ -46,10 +52,8 @@ app.register(fastifySwagger, {
   },
   transform: jsonSchemaTransform,
 });
-
 requestLogger(app);
 applyRequest(app);
-
 app.register(restaurantRoutes);
 app.register(authRoutes);
 app.register(userRoutes);

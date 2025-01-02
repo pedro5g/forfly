@@ -1,14 +1,14 @@
 version: "3.7"
 services:
   postgres:
-    container_name: pizza_shop_api
+    container_name: forkly-api
     image: bitnami/postgresql:latest
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_DB=pizza_shop_db
+      - POSTGRES_DB=forkly-api
     volumes:
       - postgres_data:/bitnami/postgresql
 

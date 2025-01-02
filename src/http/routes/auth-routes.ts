@@ -57,6 +57,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
       if (env.NODE_ENV === "dev") {
         logger.info(`code ${authLinkCode}`);
         logger.info(`code ${env.AUTH_REDIRECT_URL}`);
+        logger.info(`auth link ${authLink.toString()}`);
       }
       reply.status(200).send();
     }
@@ -77,9 +78,8 @@ export async function authRoutes(app: FastifyTypeInstance) {
         },
       },
     },
-    async (request, reply) => {
+    async (request) => {
       const { code, redirect } = request.query;
-
       const authLinkFromCode = await request.ctx.authLinks.findByCode(code);
 
       if (!authLinkFromCode) {
@@ -104,15 +104,14 @@ export async function authRoutes(app: FastifyTypeInstance) {
         throw new Error("Restaurant not found");
       }
 
-      await request.signUser({
-        sub: authLinkFromCode.userId,
-        restauranteId: managedRestaurante.id,
-      });
+      await request.signUser(
+        {
+          sub: authLinkFromCode.userId,
+          restauranteId: managedRestaurante.id,
+        },
+        redirect
+      );
       await request.ctx.authLinks.delete(code);
-
-      if (env.NODE_ENV === "dev") reply.status(300).send();
-
-      reply.status(300).redirect(redirect);
     }
   );
 
