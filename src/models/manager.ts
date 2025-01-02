@@ -20,14 +20,4 @@ export class Manager extends User implements IManagerRepository {
 
     return manager;
   }
-
-  async findById(id: string): Promise<ManagerType | null> {
-    const user = await this.db.query.users.findFirst({
-      where(fields, { eq }) {
-        return eq(fields.id, id);
-      },
-    });
-
-    return user ?? null;
-  }
 }

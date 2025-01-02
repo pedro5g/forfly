@@ -51,4 +51,20 @@ describe("User unit tests", () => {
       })
     );
   });
+  test("Find by id", async () => {
+    const ctx = new Context();
+    const user = new User(ctx);
+
+    const fundUser = await user.findById(userIds[0]);
+    expect(fundUser).toBeTruthy();
+    expect(fundUser).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        name: "jhon",
+        email: "testuser3@gmail.com",
+        phone: "15 997766 3300",
+        role: "manager",
+      })
+    );
+  });
 });

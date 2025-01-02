@@ -42,17 +42,22 @@ export async function authRoutes(app: FastifyTypeInstance) {
       authLink.searchParams.set("code", authLinkCode);
       authLink.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
 
-      await mail.sendMail({
-        from: {
-          name: "Pizza Shop",
-          address: "hi@pizzashop.com",
-        },
-        to: email,
-        subject: "Authenticate to Pizza Shop",
-        text: `Use the following link to authenticate on Pizza Shop: ${authLink.toString()}`,
-      });
+      if (env.NODE_ENV === "production") {
+        await mail.sendMail({
+          from: {
+            name: "Pizza Shop",
+            address: "hi@pizzashop.com",
+          },
+          to: email,
+          subject: "Authenticate to Pizza Shop",
+          text: `Use the following link to authenticate on Pizza Shop: ${authLink.toString()}`,
+        });
+      }
 
-      if (env.NODE_ENV === "dev") logger.info(authLink.toString());
+      if (env.NODE_ENV === "dev") {
+        logger.info(`code ${authLinkCode}`);
+        logger.info(`code ${env.AUTH_REDIRECT_URL}`);
+      }
       reply.status(200).send();
     }
   );

@@ -14,4 +14,5 @@ export type UserType = {
 
 export interface IUserRepository extends IBase {
   findByEmail(email: string): Promise<UserType | null>;
+  findById(id: string): Promise<UserType | null>;
 }

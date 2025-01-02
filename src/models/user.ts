@@ -14,4 +14,14 @@ export class User extends Base implements IUserRepository {
 
     return user || null;
   }
+
+  async findById(id: string): Promise<UserType | null> {
+    const user = await this.db.query.users.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.id, id);
+      },
+    });
+
+    return user ?? null;
+  }
 }

@@ -9,6 +9,8 @@ export async function applyRequest(app: FastifyInstance) {
       const token = await reply.jwtSign(payload);
 
       reply.setCookie("auth", token, {
+        secure: true,
+        sameSite: true,
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: "/",

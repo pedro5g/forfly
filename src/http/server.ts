@@ -15,6 +15,9 @@ import { requestLogger } from "../core/hooks/request-logger";
 import { applyRequest } from "../core/hooks/apply-request";
 import { restaurantRoutes } from "./routes/restaurant-routes";
 import { authRoutes } from "./routes/auth-routes";
+import { userRoutes } from "./routes/user-routes";
+import { orderRoutes } from "./routes/order-routes";
+import { productRoutes } from "./routes/product-routes";
 
 const app = fastify();
 
@@ -26,7 +29,7 @@ app.register(fastifyCookie);
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
   cookie: {
-    cookieName: "access_token",
+    cookieName: "auth",
     signed: false,
   },
   sign: {
@@ -46,8 +49,13 @@ app.register(fastifySwagger, {
 
 requestLogger(app);
 applyRequest(app);
+
 app.register(restaurantRoutes);
 app.register(authRoutes);
+app.register(userRoutes);
+app.register(orderRoutes);
+app.register(productRoutes);
+
 app.register(fastifySwaggerUi, {
   routePrefix: "/docs",
 });
