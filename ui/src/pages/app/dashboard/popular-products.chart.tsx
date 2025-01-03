@@ -42,7 +42,7 @@ export const PopularProductsChart = () => {
   });
 
   return (
-    <Card className="col-span-3">
+    <Card className="col-span-9 md:col-span-3">
       <CardHeader className="flex-row items-center justify-between pb-8">
         <div className="flex w-full items-center justify-between">
           <CardTitle className="text-base font-medium">

@@ -5,6 +5,8 @@ import { env } from "../../env";
 import { mail } from "../../lib/nodemiler";
 import { logger } from "../../core/logger";
 import dayjs from "dayjs";
+import { NotFoundError } from "../_errors/not-found-error";
+import { BadRequestError } from "../_errors/bad-request-error";
 
 export async function authRoutes(app: FastifyTypeInstance) {
   app.post(
@@ -27,7 +29,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
       const userFound = await request.ctx.manager.findByEmail(email);
 
       if (!userFound) {
-        throw new Error("User not found");
+        throw new NotFoundError("User not found");
       }
 
       const authLinkCode = randomUUID();
@@ -83,7 +85,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
       const authLinkFromCode = await request.ctx.authLinks.findByCode(code);
 
       if (!authLinkFromCode) {
-        throw new Error("Auth link not found");
+        throw new NotFoundError("Auth link not found");
       }
 
       const daysSinceAuthLinkWasCreated = dayjs().diff(
@@ -92,7 +94,9 @@ export async function authRoutes(app: FastifyTypeInstance) {
       );
 
       if (daysSinceAuthLinkWasCreated > 7) {
-        throw new Error("Auth link expired, please generate a new one.");
+        throw new BadRequestError(
+          "Auth link expired, please generate a new one."
+        );
       }
 
       const managedRestaurante =
@@ -101,7 +105,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
         );
 
       if (!managedRestaurante) {
-        throw new Error("Restaurant not found");
+        throw new NotFoundError("Restaurant not found");
       }
 
       await request.signUser(

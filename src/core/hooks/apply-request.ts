@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { Context } from "../../models/context";
 import type { PayloadType } from "../../types/fastify-request";
+import { UnauthorizedError } from "../../http/_errors/unauthorized-error";
 
 export async function applyRequest(app: FastifyInstance) {
   app.addHook("onRequest", async (request, reply) => {
@@ -27,7 +28,7 @@ export async function applyRequest(app: FastifyInstance) {
       const payload = await request.jwtVerify<PayloadType>();
 
       if (!payload) {
-        throw new Error();
+        throw new UnauthorizedError();
       }
 
       return {

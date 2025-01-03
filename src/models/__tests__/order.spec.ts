@@ -117,6 +117,35 @@ describe("Order unit tests", () => {
     assert(order);
   });
 
+  test("Create order", async () => {
+    const ctx = new Context();
+    const order = new Order(ctx);
+
+    const res = await order.createOrder({
+      restaurantId: restaurantIds[0],
+      customerId: userIds[1],
+      items: [{ productId: productIds[0], quantity: 2 }],
+    });
+
+    orderIds.push(res.id);
+
+    const orderOnDatabase = await db.query.orders.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.id, res.id);
+      },
+    });
+
+    expect(orderOnDatabase).toBeTruthy();
+
+    const orderItemOnDatabase = await db.query.orderItems.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.orderId, res.id);
+      },
+    });
+
+    expect(orderItemOnDatabase).toBeTruthy();
+  });
+
   test("get Order With Details", async () => {
     const ctx = new Context();
     const order = new Order(ctx);

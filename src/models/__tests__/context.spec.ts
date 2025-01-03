@@ -6,6 +6,7 @@ describe("Context unit test", () => {
 
     assert(ctx);
     assert(ctx.manager);
+    assert(ctx.customer);
     assert(ctx.user);
     assert(ctx.authLinks);
     assert(ctx.orders);

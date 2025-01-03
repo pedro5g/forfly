@@ -1,9 +1,11 @@
+import { eq } from "drizzle-orm";
 import { restaurants } from "../db/schemas";
 import { Base } from "./base";
 import type {
   IRestaurantsRepository,
   RegisterRestaurantParams,
   RestaurantType,
+  UpdateProfileParamsType,
 } from "./repositories/i-restaurants-repository";
 
 export class Restaurant extends Base implements IRestaurantsRepository {
@@ -17,6 +19,20 @@ export class Restaurant extends Base implements IRestaurantsRepository {
       .returning({ id: restaurants.id });
 
     return restaurant;
+  }
+
+  async updateProfile({
+    restaurantId,
+    name,
+    description,
+  }: UpdateProfileParamsType): Promise<void> {
+    await this.db
+      .update(restaurants)
+      .set({
+        name,
+        description,
+      })
+      .where(eq(restaurants.id, restaurantId));
   }
 
   async getRestaurantById(

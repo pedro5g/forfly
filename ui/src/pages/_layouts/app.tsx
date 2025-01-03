@@ -13,9 +13,9 @@ export function AppLayout() {
       (error) => {
         if (isAxiosError(error)) {
           const status = error.response?.status;
-          const code = error.response?.data.code;
+          const message = error.response?.data.message;
 
-          if (status === 401 && code === "UNAUTHORIZED") {
+          if (status === 401 && message === "UNAUTHORIZED") {
             navigate("/sign-in", {
               replace: true,
             });

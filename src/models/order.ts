@@ -1,6 +1,7 @@
 import { and, count, desc, eq, gte, ilike, lte, sql, sum } from "drizzle-orm";
 import { Base } from "./base";
 import type {
+  CreateOrderParams,
   GetDailyReceiptInPeriodProps,
   GetDailyReceiptInPeriodReturn,
   GetDayOrdersAmountReturn,
@@ -14,9 +15,71 @@ import type {
   OrderType,
 } from "./repositories/i-orders-repository";
 import dayjs from "dayjs";
-import { orders, users } from "../db/schemas";
+import { orderItems, orders, users } from "../db/schemas";
 
 export class Order extends Base implements IOrders {
+  async createOrder({
+    restaurantId,
+    customerId,
+    items,
+  }: CreateOrderParams): Promise<{ id: string }> {
+    const productIds = items.map((item) => item.productId);
+
+    const products = await this.db.query.products.findMany({
+      where(fields, { eq, and, inArray }) {
+        return and(
+          eq(fields.restaurantId, restaurantId),
+          inArray(fields.id, productIds)
+        );
+      },
+    });
+
+    const orderProducts = items.map((item) => {
+      const product = products.find((product) => product.id === item.productId);
+
+      if (!product) {
+        throw new Error("Not all products are available in this restaurant.");
+      }
+
+      return {
+        productId: item.productId,
+        unitPriceInCents: product.priceInCents,
+        quantity: item.quantity,
+        subtotalInCents: item.quantity * product.priceInCents,
+      };
+    });
+
+    const totalInCents = orderProducts.reduce((total, orderItem) => {
+      return total + orderItem.subtotalInCents;
+    }, 0);
+
+    const order = await this.db.transaction(async (tx) => {
+      const [order] = await this.db
+        .insert(orders)
+        .values({
+          totalInCents,
+          customerId,
+          restaurantId,
+        })
+        .returning({ id: orders.id });
+
+      await tx.insert(orderItems).values(
+        orderProducts.map((orderProduct) => {
+          return {
+            orderId: order.id,
+            productId: orderProduct.productId,
+            priceInCents: orderProduct.unitPriceInCents,
+            quantity: orderProduct.quantity,
+          };
+        })
+      );
+
+      return order;
+    });
+
+    return order;
+  }
+
   async getOrderWithDetails(data: {
     orderId: string;
     restaurantId: string;

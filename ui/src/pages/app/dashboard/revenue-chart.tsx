@@ -70,8 +70,8 @@ export const RevenueChart = () => {
   }, [data]);
 
   return (
-    <Card className="col-span-6">
-      <CardHeader className="flex-row items-center justify-between pb-8">
+    <Card className="col-span-9 md:col-span-6">
+      <CardHeader className="flex-col justify-between pb-8 md:flex-row md:items-center">
         <div className="space-y-1">
           <CardTitle className="text-base font-medium">
             Receita no período

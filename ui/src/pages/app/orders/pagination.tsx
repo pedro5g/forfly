@@ -28,12 +28,12 @@ export const Pagination = ({
       </span>
       <div className="flex items-center gap-6 lg:gap-8">
         <div className="text-sm font-medium">
-          Página {pageIndex + 1} de {pages}
+          Página {pageIndex} de {pages}
         </div>
         <div className="flex items-center gap-2">
           <Button
-            disabled={pageIndex === 0}
-            onClick={() => onPageChange(0)}
+            disabled={pageIndex === 1}
+            onClick={() => onPageChange(1)}
             variant="outline"
             className="h-8 w-8 p-0"
           >
@@ -41,7 +41,7 @@ export const Pagination = ({
             <span className="sr-only">Primeira página</span>
           </Button>
           <Button
-            disabled={pageIndex === 0}
+            disabled={pageIndex === 1}
             onClick={() => onPageChange(pageIndex - 1)}
             variant="outline"
             className="h-8 w-8 p-0"
@@ -50,7 +50,7 @@ export const Pagination = ({
             <span className="sr-only">Proxima página</span>
           </Button>
           <Button
-            disabled={pageIndex + 1 === pages}
+            disabled={pageIndex === pages}
             onClick={() => onPageChange(pageIndex + 1)}
             variant="outline"
             className="h-8 w-8 p-0"
@@ -59,8 +59,8 @@ export const Pagination = ({
             <span className="sr-only">Página anterior</span>
           </Button>
           <Button
-            disabled={pageIndex + 1 === pages}
-            onClick={() => onPageChange(pages - 1)}
+            disabled={pageIndex === pages}
+            onClick={() => onPageChange(pages)}
             variant="outline"
             className="h-8 w-8 p-0"
           >

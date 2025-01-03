@@ -121,7 +121,7 @@ export const StoreProfileDialog = () => {
             </Label>
             <Textarea
               {...register("description")}
-              className="col-span-3"
+              className="col-span-3 overflow-y-hidden"
               id="description"
             />
           </div>

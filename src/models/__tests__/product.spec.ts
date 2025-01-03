@@ -114,6 +114,111 @@ describe("Product unit tests", async () => {
     assert(product);
   });
 
+  test("create product", async () => {
+    const ctx = new Context();
+    const product = new Product(ctx);
+
+    const resProduct = await product.createProduct({
+      name: "pizza of cheese",
+      description: "test description",
+      price: 40,
+      restaurantId: restaurantIds[0],
+    });
+    productIds.push(resProduct.id);
+    expect(resProduct).toBeTruthy();
+
+    const productOnDatabase = await db.query.products.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.id, resProduct.id);
+      },
+    });
+
+    expect(productOnDatabase).toBeTruthy();
+    expect(productOnDatabase).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        name: "pizza of cheese",
+        description: "test description",
+        restaurantId: restaurantIds[0],
+        priceInCents: 40,
+      })
+    );
+  });
+
+  test("update menu", async () => {
+    const ctx = new Context();
+    const product = new Product(ctx);
+
+    const datas = [
+      {
+        name: "pizza of cheese 1",
+        description: "test description",
+        priceInCents: 40,
+        restaurantId: restaurantIds[0],
+      },
+      {
+        name: "pizza of cheese 2",
+        description: "test description",
+        priceInCents: 40,
+        restaurantId: restaurantIds[0],
+      },
+    ];
+
+    const productsRes = await db
+      .insert(products)
+      .values(datas.map((data) => data))
+      .returning({ id: products.id });
+    productIds.push(...productsRes.map((prod) => prod.id));
+
+    const res = await product.updateMenu({
+      restaurantId: restaurantIds[0],
+      deletedProductIds: [productsRes[0].id],
+      newOrUpdatedProducts: [
+        {
+          name: "pizza of cheese 3",
+          description: "test description",
+          price: 40,
+        },
+      ],
+    });
+
+    if (res) {
+      productIds.push(res[0].id);
+    }
+
+    const product1WasDeleted = await db.query.products.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.name, "pizza of cheese 1");
+      },
+    });
+
+    expect(product1WasDeleted).toBeUndefined();
+
+    const product2WasPreserved = await db.query.products.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.name, "pizza of cheese 2");
+      },
+    });
+    expect(product2WasPreserved).toBeTruthy();
+
+    const product3WasCreated = await db.query.products.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.name, "pizza of cheese 3");
+      },
+    });
+
+    expect(product3WasCreated).toBeTruthy();
+    expect(product3WasCreated).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        name: "pizza of cheese 3",
+        description: "test description",
+        restaurantId: restaurantIds[0],
+        priceInCents: 4000,
+      })
+    );
+  });
+
   test("get Popular Products", async () => {
     const ctx = new Context();
     const product = new Product(ctx);

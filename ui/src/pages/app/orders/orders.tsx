@@ -23,9 +23,7 @@ export function Orders() {
   const customerName = searchParmas.get("customerName");
   const status = searchParmas.get("status");
 
-  const pageIndex = z.coerce
-    .number()
-    .parse(searchParmas.get("page") ?? "1");
+  const pageIndex = z.coerce.number().parse(searchParmas.get("page") ?? "1");
 
   const { data: result, isLoading } = useQuery({
     queryFn: () =>
@@ -40,7 +38,7 @@ export function Orders() {
 
   const handlePagination = (pageIndex: number) => {
     setSearchParams((prev) => {
-      prev.set("page", (pageIndex + 1).toString());
+      prev.set("page", pageIndex.toString());
       return prev;
     });
   };

@@ -63,6 +63,46 @@ describe("Restaurant unit test", async () => {
       })
     );
   });
+  test("update restaurant", async () => {
+    const data = {
+      managerName: "Jon doe",
+      email: "test2@gmail.com",
+      phone: "+55 15 00000 0000",
+    };
+
+    const ctx = new Context();
+    const restaurant = new Restaurant(ctx);
+
+    const res = await ctx.manager.insert(data);
+    userIds.push(res.id);
+    const restaurantRes = await restaurant.insert({
+      restaurantName: "pepito pizzaria",
+      managerId: res.id,
+    });
+    restaurantIds.push(restaurantRes.id);
+
+    await restaurant.updateProfile({
+      restaurantId: restaurantRes.id,
+      name: "pepito pizzaria",
+      description: "pizzaria very good",
+    });
+
+    const restaurantOnDatabase = await db.query.restaurants.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.id, restaurantRes.id);
+      },
+    });
+
+    expect(restaurantOnDatabase).toBeTruthy();
+    expect(restaurantOnDatabase).toEqual(
+      expect.objectContaining({
+        id: restaurantRes.id,
+        name: "pepito pizzaria",
+        description: "pizzaria very good",
+        managerId: res.id,
+      })
+    );
+  });
 
   test("find restaurant by id", async () => {
     const data = {

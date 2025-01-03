@@ -88,7 +88,19 @@ export type GetOrderWithDetailsReturn = {
   }[];
 };
 
+export type ProductItem = {
+  productId: string;
+  quantity: number;
+};
+
+export type CreateOrderParams = {
+  customerId: string;
+  restaurantId: string;
+  items: ProductItem[];
+};
+
 export interface IOrders extends IBase {
+  createOrder(data: CreateOrderParams): Promise<{ id: string }>;
   getOrders(
     restaurantId: string,
     query: GetOrdersParams
