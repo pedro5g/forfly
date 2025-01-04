@@ -18,7 +18,7 @@ export const ProductTableRow = (data: OrderTableRowProps) => {
         <ProductDetailsButton {...data} />
       </TableCell>
       <TableCell className="font-mono text-xs font-medium">{data.id}</TableCell>
-      <TableCell className="font-medium">{data.name}</TableCell>
+      <TableCell className="font-medium capitalize">{data.name}</TableCell>
       <TableCell className="text-muted-foreground">
         {formatDateToNow(data.createdAt)}
       </TableCell>

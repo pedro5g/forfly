@@ -14,6 +14,7 @@ import { OrderTableSkeleton } from "../orders/order-table-skeleton";
 import { Pagination } from "../orders/pagination";
 import { ProductTableRow } from "./product-table-row";
 import { SearchProduct } from "./search-product";
+import { CreateNewProjectDialog } from "./create-new-product-dialog";
 
 export function Products() {
   const [searchParmas, setSearchParams] = useSearchParams();
@@ -42,7 +43,10 @@ export function Products() {
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Produtos</h1>
         <div className="space-y-2.5">
-          <SearchProduct />
+          <div className="inline-flex w-full justify-between">
+            <SearchProduct />
+            <CreateNewProjectDialog />
+          </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>

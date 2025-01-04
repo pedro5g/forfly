@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-
+import { useHookFormMask } from "use-mask-input";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -33,6 +33,8 @@ export function SignUp() {
     },
   });
 
+  const registerWithMask = useHookFormMask(register);
+  const mask = "(99) 99999-9999";
   const { mutateAsync: registerRestaurantFn } = useMutation({
     mutationFn: registerRestaurant,
   });
@@ -93,7 +95,12 @@ export function SignUp() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" type="text" {...register("phone")} />
+                <Input
+                  id="phone"
+                  type="text"
+                  {...registerWithMask("phone", "(99) 99999-9999")}
+                  placeholder={mask.replace(/9/g, "_")}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Seu e-mail</Label>

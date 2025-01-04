@@ -34,6 +34,38 @@ export async function productRoutes(app: FastifyTypeInstance) {
     }
   );
 
+  app.post(
+    "/products",
+    {
+      onRequest: [authMiddleware],
+      schema: {
+        tags: ["Products"],
+        description: "Create a new product",
+        body: z.object({
+          name: z.string(),
+          description: z.string().optional(),
+          price: z.number(),
+        }),
+        response: {
+          200: z.null().describe("product was created"),
+        },
+      },
+    },
+    async (request, reply) => {
+      const restaurantId = await request.getManagerRestaurantId();
+      const { name, description, price } = request.body;
+
+      await request.ctx.products.createProduct({
+        name,
+        description,
+        price,
+        restaurantId,
+      });
+
+      reply.status(200).send();
+    }
+  );
+
   app.get(
     "/products",
     {

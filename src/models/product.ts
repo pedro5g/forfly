@@ -19,7 +19,7 @@ export class Product extends Base implements IProducts {
       .insert(products)
       .values({
         name: data.name,
-        priceInCents: data.price,
+        priceInCents: data.price * 100, // covert to cents
         description: data.description,
         restaurantId: data.restaurantId,
       })
