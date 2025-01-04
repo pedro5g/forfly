@@ -1,39 +1,32 @@
+import { getProducts } from "@/api/get-products";
 import {
   Table,
-  TableBody,
-  TableHead,
   TableHeader,
   TableRow,
+  TableHead,
+  TableBody,
 } from "@/components/ui/table";
-
-import { Helmet } from "react-helmet-async";
-import { OrderTableRow } from "./order-table-row";
-import { OrderTableFilters } from "./order-table-filters";
-import { Pagination } from "./pagination";
 import { useQuery } from "@tanstack/react-query";
-import { getOrders } from "@/api/get-orders";
+import { Helmet } from "react-helmet-async";
 import { useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { OrderTableSkeleton } from "./order-table-skeleton";
+import { OrderTableSkeleton } from "../orders/order-table-skeleton";
+import { Pagination } from "../orders/pagination";
+import { ProductTableRow } from "./product-table-row";
+import { SearchProduct } from "./search-product";
 
-export function Orders() {
+export function Products() {
   const [searchParmas, setSearchParams] = useSearchParams();
-
-  const orderId = searchParmas.get("orderId");
-  const customerName = searchParmas.get("customerName");
-  const status = searchParmas.get("status");
-
+  const productName = searchParmas.get("productName");
   const pageIndex = z.coerce.number().parse(searchParmas.get("page") ?? "1");
 
   const { data: result, isLoading } = useQuery({
     queryFn: () =>
-      getOrders({
+      getProducts({
         pageIndex,
-        customerName,
-        orderId,
-        status: status === "all" ? null : status,
+        productName,
       }),
-    queryKey: ["orders", pageIndex, orderId, customerName, status],
+    queryKey: ["products", pageIndex, productName],
   });
 
   const handlePagination = (pageIndex: number) => {
@@ -45,30 +38,29 @@ export function Orders() {
 
   return (
     <>
-      <Helmet title="pedidos" />
+      <Helmet title="products" />
       <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">Pedidos</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Produtos</h1>
         <div className="space-y-2.5">
-          <OrderTableFilters />
+          <SearchProduct />
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[64px]"></TableHead>
                   <TableHead className="w-[140px]">Identificador</TableHead>
-                  <TableHead className="w-[120px]">Realizado há</TableHead>
-                  <TableHead className="w-[140px]">Status</TableHead>
-                  <TableHead className="w-[100px]">Cliente</TableHead>
-                  <TableHead className="w-[140px]">Total do pedido</TableHead>
-                  <TableHead className="w-[164px]"></TableHead>
-                  <TableHead className="w-[132px]"></TableHead>
+                  <TableHead className="w-[180px]">Name</TableHead>
+                  <TableHead className="w-[140px]">Criado em</TableHead>
+
+                  <TableHead className="w-[140px] text-right">Preço</TableHead>
+                  <TableHead className="w-[30px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading && <OrderTableSkeleton />}
                 {result &&
-                  result.orders.map((order) => (
-                    <OrderTableRow key={order.orderId} {...order} />
+                  result.products.map((product) => (
+                    <ProductTableRow key={product.id} {...product} />
                   ))}
               </TableBody>
             </Table>

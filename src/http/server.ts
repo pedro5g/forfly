@@ -79,6 +79,8 @@ app.setErrorHandler(async (error, _request, reply) => {
   switch (error.constructor.name) {
     case "UnauthorizedError":
       return reply.status(401).send({ message: "UNAUTHORIZED" });
+    case "NotManagerError":
+      return reply.status(401).send({ message: error.message });
     case "BadRequestError":
       return reply.status(400).send({ message: error.message });
     case "NotFoundError":

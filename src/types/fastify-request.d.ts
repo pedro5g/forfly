@@ -15,6 +15,7 @@ declare module "fastify" {
       userId: PayloadType["sub"];
       restaurantId: PayloadType["restauranteId"];
     }>;
+    getManagerRestaurantId: () => Promise<string>;
     ctx: Context;
   }
 }

@@ -27,10 +27,21 @@ export type UpdateMenuParams = {
   newOrUpdatedProducts: CreateProductParams[];
 };
 
+export type ListProductsParams = {
+  restaurantId: string;
+  productName?: string;
+  pageIndex: number;
+};
+export type ListProductsReturn = {
+  products: ProductType[];
+  totalCount: number;
+};
+
 export interface IProducts extends IBase {
   getPopularProducts(restaurantId: string): Promise<GetPopularProductsReturn[]>;
   createProduct(
     data: CreateProductParams & { restaurantId: string }
   ): Promise<{ id: string }>;
   updateMenu(data: UpdateMenuParams): Promise<{ id: string }[] | void>;
+  listProducts(data: ListProductsParams): Promise<ListProductsReturn>;
 }

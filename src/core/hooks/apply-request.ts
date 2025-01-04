@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { Context } from "../../models/context";
 import type { PayloadType } from "../../types/fastify-request";
 import { UnauthorizedError } from "../../http/_errors/unauthorized-error";
+import { NotManagerError } from "../../http/_errors/not-manager-error";
 
 export async function applyRequest(app: FastifyInstance) {
   app.addHook("onRequest", async (request, reply) => {
@@ -35,6 +36,15 @@ export async function applyRequest(app: FastifyInstance) {
         userId: payload.sub,
         restaurantId: payload.restauranteId,
       };
+    };
+
+    request.getManagerRestaurantId = async () => {
+      const { restaurantId } = await request.getCurrentUser();
+
+      if (!restaurantId) {
+        throw new NotManagerError();
+      }
+      return restaurantId;
     };
   });
 }

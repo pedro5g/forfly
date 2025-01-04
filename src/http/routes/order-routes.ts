@@ -11,6 +11,32 @@ const $Status = z.enum([
 ]);
 
 export async function orderRoutes(app: FastifyTypeInstance) {
+  app.post(
+    "/orders/:restaurantId",
+    {
+      onRequest: [authMiddleware],
+      schema: {
+        tags: ["Orders"],
+        description: "Register a new order",
+        body: z.object({
+          items: z.array(
+            z.object({ quantity: z.number(), productId: z.string().uuid() })
+          ),
+        }),
+        params: z.object({ restaurantId: z.string() }),
+      },
+    },
+    async (request, reply) => {
+      const { userId: customerId } = await request.getCurrentUser();
+      const { restaurantId } = request.params;
+      const { items } = request.body;
+
+      await request.ctx.orders.createOrder({ customerId, restaurantId, items });
+
+      reply.status(200).send();
+    }
+  );
+
   app.get(
     "/orders",
     {
@@ -54,11 +80,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const { customerName, orderId, status, pageIndex } = request.query;
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const data = await request.ctx.orders.getOrders(restaurantId, {
         customerName,
@@ -123,11 +145,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const { orderId } = request.params;
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const order = await request.ctx.orders.getOrderWithDetails({
         restaurantId,
@@ -161,11 +179,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const { receipt, diffFromLastMonth } =
         await request.ctx.orders.getMothsReceipts(restaurantId);
@@ -195,11 +209,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const { amount, diffFromLastMonth } =
         await request.ctx.orders.getMonthOrdersAmount(restaurantId);
@@ -230,11 +240,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const { amount, diffFromLastMonth } =
         await request.ctx.orders.getMonthCanceledOrdersAmount(restaurantId);
@@ -264,11 +270,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const { amount, diffFromLastMonth } =
         await request.ctx.orders.getDayOrdersAmount(restaurantId);
@@ -304,11 +306,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const { from, to } = request.query;
 
@@ -348,11 +346,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const { orderId } = request.params;
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const order = await request.ctx.orders.findByOrderIdAndRestaurantId(
         orderId,
@@ -399,11 +393,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const { orderId } = request.params;
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const order = await request.ctx.orders.findByOrderIdAndRestaurantId(
         orderId,
@@ -449,11 +439,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const { orderId } = request.params;
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const order = await request.ctx.orders.findByOrderIdAndRestaurantId(
         orderId,
@@ -499,11 +485,7 @@ export async function orderRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const { orderId } = request.params;
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        return reply.status(401).send({ message: "Unauthorized" });
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const order = await request.ctx.orders.findByOrderIdAndRestaurantId(
         orderId,

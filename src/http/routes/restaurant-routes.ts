@@ -12,8 +12,8 @@ export async function restaurantRoutes(app: FastifyTypeInstance) {
         description: "Register Restaurant",
         tags: ["Restaurant"],
         body: z.object({
-          managerName: z.string().min(3).max(30),
-          restaurantName: z.string().min(3).max(30),
+          managerName: z.string().min(3),
+          restaurantName: z.string().min(3),
           email: z.string().email(),
           phone: z.string().regex(/^\(\d{2}\) 9\d{4}-\d{4}$/),
         }),
@@ -72,11 +72,7 @@ export async function restaurantRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-
-      if (!restaurantId) {
-        throw new BadRequestError("User is not a manager");
-      }
+      const restaurantId = await request.getManagerRestaurantId();
 
       const mangedRestaurant = await request.ctx.restaurants.getRestaurantById(
         restaurantId
@@ -107,10 +103,7 @@ export async function restaurantRoutes(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      const { restaurantId } = await request.getCurrentUser();
-      if (!restaurantId) {
-        throw new BadRequestError("User is not a manager");
-      }
+      const restaurantId = await request.getManagerRestaurantId();
       const { name, description } = request.body;
 
       await request.ctx.restaurants.updateProfile({

@@ -1,10 +1,13 @@
-import { sum, eq, desc, and, inArray } from "drizzle-orm";
+import { sum, eq, desc, and, inArray, ilike, count } from "drizzle-orm";
 import { orderItems, orders, products, restaurants } from "../db/schemas";
 import { Base } from "./base";
 import type {
   CreateProductParams,
   GetPopularProductsReturn,
   IProducts,
+  ListProductsParams,
+  ListProductsReturn,
+  ProductType,
   UpdateMenuParams,
 } from "./repositories/i-products-repository";
 
@@ -113,5 +116,37 @@ export class Product extends Base implements IProducts {
       .limit(5);
 
     return popularProducts;
+  }
+
+  async listProducts({
+    restaurantId,
+    pageIndex,
+    productName,
+  }: ListProductsParams): Promise<ListProductsReturn> {
+    const baseProductsQuery = this.db
+      .select()
+      .from(products)
+      .where(
+        and(
+          eq(products.restaurantId, restaurantId),
+          productName ? ilike(products.name, `%${productName}%`) : undefined
+        )
+      );
+
+    const [[amountOfProductsQuery], allProducts] = await Promise.all([
+      this.db
+        .select({ count: count() })
+        .from(baseProductsQuery.as("baseProductsQuery")),
+      this.db
+        .select()
+        .from(baseProductsQuery.as("baseProductsQuery"))
+        .offset((pageIndex - 1) * 10)
+        .limit(10)
+        .orderBy(({ name }) => desc(name)),
+    ]);
+
+    const amountOfProducts = amountOfProductsQuery.count;
+
+    return { products: allProducts, totalCount: amountOfProducts };
   }
 }

@@ -1,4 +1,4 @@
-import { Home, Pizza, UtensilsCrossed } from "lucide-react";
+import { CookingPot, Home, Pizza, UtensilsCrossed } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { NavLink } from "./nav-link";
 import { ThemeToggle } from "./theme/theme-toggle";
@@ -18,6 +18,10 @@ export const Header = () => {
           <NavLink to="/orders">
             <UtensilsCrossed className="size-4" />
             Pedidos
+          </NavLink>
+          <NavLink to="/products">
+            <CookingPot className="size-4" />
+            Produtos
           </NavLink>
         </nav>
 

@@ -104,14 +104,10 @@ export async function authRoutes(app: FastifyTypeInstance) {
           authLinkFromCode.userId
         );
 
-      if (!managedRestaurante) {
-        throw new NotFoundError("Restaurant not found");
-      }
-
       await request.signUser(
         {
           sub: authLinkFromCode.userId,
-          restauranteId: managedRestaurante.id,
+          restauranteId: managedRestaurante?.id,
         },
         redirect
       );
