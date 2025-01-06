@@ -27,6 +27,7 @@ interface ProductDetailsButtonProps {
   id: string;
   name: string;
   priceInCents: number;
+  available: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,6 +37,7 @@ export const ProductDetailsButton = ({
   name,
   description,
   priceInCents,
+  available,
   createdAt,
   updatedAt,
 }: ProductDetailsButtonProps) => {
@@ -69,7 +71,20 @@ export const ProductDetailsButton = ({
                       Descrição:
                       <br />
                       <br />
-                      {description ?? "Não informado"}
+                      <p className="text-white">
+                        {description ?? "Não informado"}
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={2} className="text-muted-foreground">
+                    <div className="inline-flex w-full items-center justify-between">
+                      {available ? "Disponível" : "Indisponível"}
+                      <div
+                        data-available={available}
+                        className="size-3 rounded-full shadow-md data-[available=false]:bg-red-700 data-[available=true]:bg-green-500"
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

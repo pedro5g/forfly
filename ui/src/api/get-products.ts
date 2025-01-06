@@ -7,11 +7,11 @@ export interface GetProductQuery {
 
 export interface GetProductsResponse {
   products: {
-    description: string | null;
     id: string;
     name: string;
+    description: string | null;
     priceInCents: number;
-    restaurantId: string;
+    available: boolean;
     createdAt: Date;
     updatedAt: Date;
   }[];

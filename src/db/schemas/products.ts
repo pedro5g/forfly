@@ -1,4 +1,11 @@
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { randomUUID } from "node:crypto";
 import { restaurants } from "./restaurantes";
 import { relations } from "drizzle-orm";
@@ -16,6 +23,7 @@ export const products = pgTable("products", {
     .references(() => restaurants.id, {
       onDelete: "cascade",
     }),
+  available: boolean().notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

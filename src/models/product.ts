@@ -22,6 +22,7 @@ export class Product extends Base implements IProducts {
         priceInCents: data.price * 100, // covert to cents
         description: data.description,
         restaurantId: data.restaurantId,
+        available: data.available,
       })
       .returning({ id: restaurants.id });
 
@@ -66,6 +67,7 @@ export class Product extends Base implements IProducts {
               name: product.name,
               description: product.description,
               priceInCents: product.price * 100, // convert to cents
+              available: product.available,
             })
             .where(
               and(
@@ -124,7 +126,15 @@ export class Product extends Base implements IProducts {
     productName,
   }: ListProductsParams): Promise<ListProductsReturn> {
     const baseProductsQuery = this.db
-      .select()
+      .select({
+        id: products.id,
+        name: products.name,
+        description: products.description,
+        priceInCents: products.priceInCents,
+        available: products.available,
+        createdAt: products.createdAt,
+        updatedAt: products.updatedAt,
+      })
       .from(products)
       .where(
         and(
@@ -148,5 +158,23 @@ export class Product extends Base implements IProducts {
     const amountOfProducts = amountOfProductsQuery.count;
 
     return { products: allProducts, totalCount: amountOfProducts };
+  }
+
+  async listAllProduct(
+    restaurantId: string
+  ): Promise<Omit<ProductType, "restaurantId" | "updatedAt">[]> {
+    const allProducts = await this.db
+      .select({
+        id: products.id,
+        name: products.name,
+        description: products.description,
+        priceInCents: products.priceInCents,
+        available: products.available,
+        createdAt: products.createdAt,
+      })
+      .from(products)
+      .where(eq(products.restaurantId, restaurantId));
+
+    return allProducts;
   }
 }

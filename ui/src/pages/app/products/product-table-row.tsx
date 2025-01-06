@@ -1,12 +1,13 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { formatDateToNow, formatPrice } from "@/lib/utils";
-import { ProductDetailsButton } from "./product-datails-button";
+import { ProductDetailsButton } from "./product-details-button";
 
 export interface OrderTableRowProps {
-  description: string | null;
   id: string;
   name: string;
+  description: string | null;
   priceInCents: number;
+  available: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

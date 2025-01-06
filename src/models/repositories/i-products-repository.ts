@@ -6,6 +6,7 @@ export type ProductType = {
   priceInCents: number;
   restaurantId: string;
   description: string | null;
+  available: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -19,6 +20,7 @@ export type CreateProductParams = {
   description?: string | undefined;
   name: string;
   price: number;
+  available: boolean;
 };
 
 export type UpdateMenuParams = {
@@ -33,7 +35,7 @@ export type ListProductsParams = {
   pageIndex: number;
 };
 export type ListProductsReturn = {
-  products: ProductType[];
+  products: Omit<ProductType, "restaurantId">[];
   totalCount: number;
 };
 
@@ -44,4 +46,7 @@ export interface IProducts extends IBase {
   ): Promise<{ id: string }>;
   updateMenu(data: UpdateMenuParams): Promise<{ id: string }[] | void>;
   listProducts(data: ListProductsParams): Promise<ListProductsReturn>;
+  listAllProduct(
+    restaurantId: string
+  ): Promise<Omit<ProductType, "restaurantId" | "updatedAt">[]>;
 }

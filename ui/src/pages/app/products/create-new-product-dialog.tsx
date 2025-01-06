@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,6 +25,7 @@ const createNewProductSchema = z.object({
   name: z.string().trim(),
   description: z.string().optional(),
   price: z.coerce.number(),
+  isAvailable: z.boolean(),
 });
 
 type CreateNewProductSchemaType = z.infer<typeof createNewProductSchema>;
@@ -34,19 +36,25 @@ export const CreateNewProjectDialog = () => {
   const { register, handleSubmit, control, reset } =
     useForm<CreateNewProductSchemaType>({
       resolver: zodResolver(createNewProductSchema),
-      values: { name: "", description: undefined, price: 0 },
+      values: {
+        name: "",
+        description: undefined,
+        price: 0,
+        isAvailable: false,
+      },
     });
 
   const onSubmit = async ({
     name,
     price,
     description,
+    isAvailable,
   }: CreateNewProductSchemaType) => {
     toast.loading("cadastrando produto", {
       id: `${name}+${price}+${description?.substring(0, 5)}`,
     });
     try {
-      await createNewProduct({ name, price, description });
+      await createNewProduct({ name, price, description, isAvailable });
       await queries.invalidateQueries({
         queryKey: ["products"],
         refetchType: "all",
@@ -106,6 +114,21 @@ export const CreateNewProjectDialog = () => {
                 id="description"
                 className="min-h-44"
                 {...register("description")}
+              />
+            </div>
+            <div className="inline-flex w-full items-center justify-between">
+              <Label>O produto está disponível ?</Label>
+              <Controller
+                control={control}
+                name="isAvailable"
+                render={({ field: { onChange, name, value } }) => (
+                  <Switch
+                    className="transition-colors data-[state=checked]:bg-green-400/80 data-[state=unchecked]:bg-red-400/40"
+                    name={name}
+                    onCheckedChange={onChange}
+                    checked={value}
+                  />
+                )}
               />
             </div>
 

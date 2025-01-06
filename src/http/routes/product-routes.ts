@@ -44,6 +44,7 @@ export async function productRoutes(app: FastifyTypeInstance) {
         body: z.object({
           name: z.string(),
           description: z.string().optional(),
+          isAvailable: z.boolean(),
           price: z.number(),
         }),
         response: {
@@ -53,13 +54,14 @@ export async function productRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       const restaurantId = await request.getManagerRestaurantId();
-      const { name, description, price } = request.body;
+      const { name, description, price, isAvailable } = request.body;
 
       await request.ctx.products.createProduct({
         name,
         description,
         price,
         restaurantId,
+        available: isAvailable,
       });
 
       reply.status(200).send();
@@ -84,7 +86,7 @@ export async function productRoutes(app: FastifyTypeInstance) {
                 id: z.string().uuid(),
                 name: z.string(),
                 priceInCents: z.number(),
-                restaurantId: z.string().uuid(),
+                available: z.boolean(),
                 description: z.string().nullable(),
                 createdAt: z.date(),
                 updatedAt: z.date(),
@@ -117,6 +119,36 @@ export async function productRoutes(app: FastifyTypeInstance) {
           totalCount: totalCount,
         },
       });
+    }
+  );
+
+  app.get(
+    "/products/all",
+    {
+      onRequest: [authMiddleware],
+      schema: {
+        tags: ["Products"],
+        description: "Get all restaurant products",
+        response: {
+          200: z.array(
+            z.object({
+              id: z.string().uuid(),
+              name: z.string(),
+              priceInCents: z.number(),
+              available: z.boolean(),
+              description: z.string().nullable(),
+              createdAt: z.date(),
+            })
+          ),
+        },
+      },
+    },
+    async (request, reply) => {
+      const restaurantId = await request.getManagerRestaurantId();
+
+      const products = await request.ctx.products.listAllProduct(restaurantId);
+
+      reply.status(200).send(products);
     }
   );
 }
