@@ -109,8 +109,3 @@ Forkly is designed to handle basic operations of a simple system:
 
 - ![Orders](./orders-page.png)
 
----
-
-## License
-
-This project is distributed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
