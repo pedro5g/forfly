@@ -82,11 +82,11 @@ Forkly is designed to handle basic operations of a simple system:
    pnpm dev
    ```
 
-### Front-end
+### ui
 
 1. Navigate to the front-end directory:
    ```bash
-   cd frontend
+   cd ui
    ```
 2. Install dependencies:
    ```bash
